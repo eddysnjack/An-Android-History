@@ -6,6 +6,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.leylapps.anandroidhistory.common.helpers.ExceptionHelper
 import com.leylapps.anandroidhistory.data.models.ApiRequestCapsule
 import com.leylapps.anandroidhistory.data.models.ApiResponseCapsule
+import com.leylapps.anandroidhistory.domain.ParcelablePair
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -16,7 +17,7 @@ import java.net.URL
 class IntentServiceAPICaller : IntentService(SERVICE_NAME) {
     companion object {
         val SERVICE_NAME: String = IntentServiceAPICaller::class.simpleName ?: "IntentServiceAPICaller"
-        val API_SERVICE_INTENT_KEY = "com.leylapps.anandroidhistory.data.IntentServiceAPICaller.API_SERVICE_INTENT_KEY"
+        val API_SERVICE_REQUEST_KEY_FOR_PARCEL = "com.leylapps.anandroidhistory.data.IntentServiceAPICaller.API_SERVICE_BROADCAST_REQUEST_KEY"
         val API_SERVICE_BROADCAST_RESULT_KEY = "com.leylapps.anandroidhistory.data.IntentServiceAPICaller.API_SERVICE_BROADCAST_RESULT_KEY"
     }
 
@@ -48,7 +49,7 @@ class IntentServiceAPICaller : IntentService(SERVICE_NAME) {
     override fun onHandleIntent(intent: Intent?) {
         var serviceRequest: ApiRequestCapsule? = null
         if (intent != null) {
-            serviceRequest = (intent.getParcelableArrayExtra(API_SERVICE_INTENT_KEY) as ApiRequestCapsule?)
+            serviceRequest = (intent.getParcelableExtra(API_SERVICE_REQUEST_KEY_FOR_PARCEL) as ApiRequestCapsule?)
             if (serviceRequest != null) {
                 // Get data from the incoming Intent
                 val urlAddress: String = serviceRequest.url ?: ""
@@ -111,12 +112,12 @@ class IntentServiceAPICaller : IntentService(SERVICE_NAME) {
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent)
     }
 
-    private fun flowControllerForRawRequests(urlAddress: String, httpMethod: HttpMethodTypes, postData: String?, headers: ArrayList<Pair<String, String>>?, broadcastResultKey: String) {
+    private fun flowControllerForRawRequests(urlAddress: String, httpMethod: HttpMethodTypes, postData: String?, headers: ArrayList<ParcelablePair<String, String>>?, broadcastResultKey: String) {
         val serviceResponse: ApiResponseCapsule = makeHttpRawRequest(urlAddress, httpMethod, postData, headers)
         sendBroadcastBackToActivity(broadcastResultKey, serviceResponse)
     }
 
-    private fun makeHttpRawRequest(urlAddress: String, httpMethod: HttpMethodTypes, postData: String?, headers: ArrayList<Pair<String, String>>?): ApiResponseCapsule {
+    private fun makeHttpRawRequest(urlAddress: String, httpMethod: HttpMethodTypes, postData: String?, headers: ArrayList<ParcelablePair<String, String>>?): ApiResponseCapsule {
         var responseBody: String? = null
         var responseCode = -1
         var responseMessage = ""

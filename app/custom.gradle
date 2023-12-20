@@ -1,0 +1,33 @@
+// CUSTOM DEFINITIONS
+def noKeyFound = '"NO_KEY_FOUND"'
+ext {
+    tmdbApiKeyDebug = noKeyFound
+    tmdbApiKeyRelease = noKeyFound
+    tmdbApiTokenDebug = noKeyFound
+    tmdbApiTokenRelease = noKeyFound
+}
+
+def sensitiveDataFile = file('../sensitive_data.txt')
+def Properties sensitiveData = new Properties()
+if (sensitiveDataFile.canRead()) {
+    // Read the sensitive data from file sensitive_data.txt
+    sensitiveData.load(new FileInputStream(sensitiveDataFile))
+    if (sensitiveData != null) {
+        // TODO: get values from file based on build names. we need to access the current build.
+        // https://stackoverflow.com/questions/50179168/how-to-get-current-build-type-in-gradle
+        // https://stackoverflow.com/questions/26538489/declare-array-hashmap-in-gradle-properties-file
+        if (sensitiveData.containsKey('tmdbApiKey')) {
+            project.ext.tmdbApiKeyDebug = sensitiveData['tmdbApiKey']
+            project.ext.tmdbApiKeyRelease = sensitiveData['tmdbApiKey']
+        }
+
+        if (sensitiveData.containsKey("tmdbToken")) {
+            project.ext.tmdbApiTokenDebug = sensitiveData["tmdbToken"]
+            project.ext.tmdbApiTokenRelease = sensitiveData["tmdbToken"]
+        }
+    }
+}
+
+// we can override here if we want to
+// tmdbApiKeyDebug = '"REVIEWERS_THEMOVIEDB_API_KEY_GOES_HERE"'
+// tmdbApiKeyRelease = '"REVIEWERS_THEMOVIEDB_API_KEY_GOES_HERE"'

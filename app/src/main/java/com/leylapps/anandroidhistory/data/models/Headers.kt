@@ -40,11 +40,11 @@ sealed class Headers {
 
     class Authorization : Headers() {
         companion object {
-            private const val key = "Authorization"
-            private const val valueTemplate = "%s %s"
-            private const val valueBearer = "Bearer %s"
-            private const val valueBasic = "Basic %s"
-            private const val valueDigest = "Digest %s"
+            const val key = "Authorization"
+            const val valueTemplate = "%s %s"
+            const val valueBearer = "Bearer %s"
+            const val valueBasic = "Basic %s"
+            const val valueDigest = "Digest %s"
         }
     }
 }
